@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -7,8 +8,11 @@ const mongoose = require('mongoose');
 const MONGO_URL = 'mongodb://localhost:27017/cohort-tools-api'
 const Student = require("./models/Student.model");
  // i did the research 
+
+console.log(process.env.MONGODB_ATLAS_URL);
+
 mongoose
-	.connect(MONGO_URL)
+	.connect(process.env.MONGODB_ATLAS_URL)
 	.then(x => console.log(`Connected to Database: "${x.connections[0].name}"`))
 	.catch(err => console.error("Error connecting to MongoDB", err));
 
@@ -45,14 +49,14 @@ app.use(cookieParser());
 app.get('/docs', (req, res) => {
 	// res.sendFile(__dirname + '/views/docs.html');
 	Student.find({})
-	.then((el) => {
-		console.log("Retrieved books ->", el);
-		res.json(el);
-	})
-	.catch((error) => {
-		console.error("Error while retrieving books ->", error);
-		res.status(500).send({ error: "Failed to retrieve books" });
-	});
+		.then((el) => {
+			console.log("Retrieved books ->", el);
+			res.json(el);
+		})
+		.catch((error) => {
+			console.error("Error while retrieving books ->", error);
+			res.status(500).send({ error: "Failed to retrieve books" });
+		});
 });
 
 app.get('/api/cohorts', (req, res) => {
