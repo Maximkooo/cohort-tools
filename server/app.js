@@ -6,7 +6,7 @@ const PORT = 5005;
 const mongoose = require('mongoose');
 const MONGO_URL = 'mongodb://localhost:27017/cohort-tools-api'
 const Student = require("./models/Student.model");
-
+ // i did the research 
 mongoose
 	.connect(MONGO_URL)
 	.then(x => console.log(`Connected to Database: "${x.connections[0].name}"`))
