@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const PORT = 5005;
 
 const mongoose = require('mongoose');
-const MONGO_URL = 'mongodb://localhost:27017/cohort-tools-api';
+// const MONGO_URL = 'mongodb://localhost:27017/cohort-tools-api';
 const Student = require('./models/Student.model');
 const Cohort = require('./models/Cohorts.model');
 // i did the research
@@ -148,6 +148,9 @@ app.get('/api/students/cohort/:cohortId', (req, res) => {
 			res.status(500).send({ error: 'Failed to retrieve students' });
 		});
 });
+
+
+
 app.get('/api/students/:studentId', (req, res) => {
 	const studentId = req.params.id;
 	Student.findById(studentId)
