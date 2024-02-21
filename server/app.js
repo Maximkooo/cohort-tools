@@ -81,7 +81,6 @@ app.get('/api/cohorts', (req, res) => {
 		});
 });
 
-
 app.get('/api/cohorts/:cohortsId', (req, res) => {
 	const cohortId = req.params.id;
 	Cohort.findById(cohortId)
@@ -131,6 +130,7 @@ app.post('/api/students', (req, res) => {
 
 app.get('/api/students', (req, res) => {
 	Student.find({})
+		.populate('cohort')
 		.then((students) => {
 			res.status(200).send(students);
 		})
@@ -140,7 +140,8 @@ app.get('/api/students', (req, res) => {
 });
 
 app.get('/api/students/cohort/:cohortId', (req, res) => {
-	Student.find({ Cohort })
+	Student.find({ cohort: req.params.cohortId })
+		.populate('cohort')
 		.then((students) => {
 			res.status(200).send(students);
 		})
@@ -149,11 +150,10 @@ app.get('/api/students/cohort/:cohortId', (req, res) => {
 		});
 });
 
-
-
 app.get('/api/students/:studentId', (req, res) => {
 	const studentId = req.params.id;
 	Student.findById(studentId)
+		.populate('cohort')
 		.then((student) => {
 			res.status(200).json(student);
 		})
