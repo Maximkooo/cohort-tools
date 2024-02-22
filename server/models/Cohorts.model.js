@@ -28,5 +28,5 @@ const cohortSchema = new Schema({
 	leadTeacher: { type: String, required: true },
 	totalHours: { type: Number, default: 360 },
 });
-const cohort = mongoose.model('cohort', cohortSchema);
+const cohort = mongoose.model('Cohort', cohortSchema);
 module.exports = cohort;

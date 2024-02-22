@@ -25,5 +25,5 @@ const studentSchema = new Schema({
 		ref: 'Cohort',
 	},
 });
-const student = mongoose.model('student', studentSchema);
+const student = mongoose.model('Student', studentSchema);
 module.exports = student;
