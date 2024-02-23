@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User.model');
-
 const { isAuthenticated } = require('./../middleware/jwt.middleware.js');
 
 const router = express.Router();
@@ -11,31 +10,29 @@ const saltRounds = 10;
 router.post('/signup', (req, res, next) => {
 	const { email, password, name } = req.body;
 
-	if (email === '' || password === '' || name === '') {
-		res.status(400).json({ message: 'Provide email, password and name' });
-		return;
+	if (!email || !password || !name) {
+		return res
+			.status(400)
+			.json({ message: 'Provide email, password, and name' });
 	}
 
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 	if (!emailRegex.test(email)) {
-		res.status(400).json({ message: 'Provide a valid email address.' });
-		return;
+		return res.status(400).json({ message: 'Provide a valid email address.' });
 	}
 
 	const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
 	if (!passwordRegex.test(password)) {
-		res.status(400).json({
+		return res.status(400).json({
 			message:
-				'Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.',
+				'Password must have at least 6 characters and contain at least one number, one lowercase, and one uppercase letter.',
 		});
-		return;
 	}
 
 	User.findOne({ email })
 		.then((foundUser) => {
 			if (foundUser) {
-				res.status(400).json({ message: 'User already exists.' });
-				return;
+				return res.status(400).json({ message: 'User already exists.' });
 			}
 
 			const salt = bcrypt.genSaltSync(saltRounds);
@@ -45,13 +42,11 @@ router.post('/signup', (req, res, next) => {
 		})
 		.then((createdUser) => {
 			const { email, name, _id } = createdUser;
-
 			const user = { email, name, _id };
-
-			res.status(201).json({ user: user });
+			res.status(201).json({ user });
 		})
 		.catch((err) => {
-			console.log(err);
+			console.error(err);
 			res.status(500).json({ message: 'Internal Server Error' });
 		});
 });
@@ -59,23 +54,20 @@ router.post('/signup', (req, res, next) => {
 router.post('/login', (req, res, next) => {
 	const { email, password } = req.body;
 
-	if (email === '' || password === '') {
-		res.status(400).json({ message: 'Provide email and password.' });
-		return;
+	if (!email || !password) {
+		return res.status(400).json({ message: 'Provide email and password.' });
 	}
 
 	User.findOne({ email })
 		.then((foundUser) => {
 			if (!foundUser) {
-				res.status(401).json({ message: 'User not found.' });
-				return;
+				return res.status(401).json({ message: 'User not found.' });
 			}
 
 			const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
 
 			if (passwordCorrect) {
 				const { _id, email, name } = foundUser;
-
 				const payload = { _id, email, name };
 
 				const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
@@ -83,17 +75,19 @@ router.post('/login', (req, res, next) => {
 					expiresIn: '6h',
 				});
 
-				res.status(200).json({ authToken: authToken });
+				res.status(200).json({ authToken });
 			} else {
 				res.status(401).json({ message: 'Unable to authenticate the user' });
 			}
 		})
-		.catch((err) => res.status(500).json({ message: 'Internal Server Error' }));
+		.catch((err) => {
+			console.error(err);
+			res.status(500).json({ message: 'Internal Server Error' });
+		});
 });
 
 router.get('/verify', isAuthenticated, (req, res, next) => {
-	console.log(`req.payload`, req.payload);
-
+	console.log('req.payload', req.payload);
 	res.status(200).json(req.payload);
 });
 

@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 // const MONGO_URL = 'mongodb://localhost:27017/cohort-tools-api';
 const Student = require('./models/Student.model');
 const Cohort = require('./models/Cohorts.model');
-// i did the research
+const authRouter = require('./routes/auth.routes');
 
 console.log(process.env.MONGODB_ATLAS_URL);
 
@@ -40,7 +40,7 @@ app.use(morgan('dev'));
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use('/auth', authRouter);
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
 // ...
